@@ -1,0 +1,54 @@
+name: Build macOS ARM
+
+on:
+  push:
+    tags: ['v*']          # triggers on version tags like v1.0
+  workflow_dispatch:       # also allows manual trigger
+
+jobs:
+  build:
+    runs-on: macos-14      # Apple Silicon (M1) runner
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          pyinstaller --onedir \
+            --name "DadarzzAgent" \
+            --add-data "templates:templates" \
+            --add-data "static:static" \
+            --add-data "config:config" \
+            --hidden-import "groq" \
+            --hidden-import "flask" \
+            --hidden-import "dotenv" \
+            --hidden-import "pypdf" \
+            main.py
+
+      - name: Create launch helper
+        run: |
+          # Create a helper script inside the distribution folder
+          cat > dist/DadarzzAgent/launch.command << 'EOF'
+          #!/bin/bash
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          cd "$DIR"
+          # Try to open the browser after a short delay
+          (sleep 2 && open "http://127.0.0.1:5000") &
+          # Run the actual bundled app (unix executable)
+          ./DadarzzAgent
+          EOF
+          chmod +x dist/DadarzzAgent/launch.command
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DadarzzAgent-macOS-arm64
+          path: dist/DadarzzAgent/

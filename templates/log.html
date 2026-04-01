@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dadarzz Agent — Activity Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-icon"><img src="/static/logo.svg" alt="Logo" class="brand-logo"></span>
+                <span class="brand-text">Dadarzz Agent</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/chat" class="nav-item" id="nav-chat">
+                    <span class="nav-icon">💬</span> Chat
+                </a>
+                <a href="/log" class="nav-item active" id="nav-log">
+                    <span class="nav-icon">📊</span> Activity Log
+                </a>
+                <a href="/settings" class="nav-item" id="nav-settings">
+                    <span class="nav-icon">⚙️</span> Settings
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <span class="user-name">{{ user.display_name }}</span>
+            </div>
+        </aside>
+
+        <main class="page-main">
+            <header class="mobile-header">
+                <button class="menu-btn" id="menu-btn">☰</button>
+                <h1>Activity Log</h1>
+                <button class="theme-toggle-sm" id="theme-toggle-sm">🌙</button>
+            </header>
+
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>📊 Activity Log</h1>
+                    <a href="/log/export" class="btn btn-outline btn-sm">📥 Export CSV</a>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-bar">
+                    <a href="/log" class="filter-chip {% if not current_filter %}active{% endif %}">All</a>
+                    <a href="/log?filter=sent_email" class="filter-chip {% if current_filter == 'sent_email' %}active{% endif %}">📧 Email</a>
+                    <a href="/log?filter=created_event" class="filter-chip {% if current_filter == 'created_event' %}active{% endif %}">📅 Calendar</a>
+                    <a href="/log?filter=uploaded_file" class="filter-chip {% if current_filter == 'uploaded_file' %}active{% endif %}">💾 Drive</a>
+                    <a href="/log?filter=created_file" class="filter-chip {% if current_filter == 'created_file' %}active{% endif %}">🗂️ Files</a>
+                    <a href="/log?filter=settings_update" class="filter-chip {% if current_filter == 'settings_update' %}active{% endif %}">⚙️ Settings</a>
+                </div>
+
+                {% if logs %}
+                <div class="log-table-wrap">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action</th>
+                                <th>Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in logs %}
+                            <tr>
+                                <td class="log-time">{{ entry.timestamp }}</td>
+                                <td><span class="action-badge">{{ entry.action }}</span></td>
+                                <td class="log-detail">{{ entry.detail or '—' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <p>No activity logged yet. Start chatting to see your activity here!</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

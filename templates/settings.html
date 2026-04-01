@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dadarzz Agent — Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-icon"><img src="/static/logo.svg" alt="Logo" class="brand-logo"></span>
+                <span class="brand-text">Dadarzz Agent</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/chat" class="nav-item" id="nav-chat">
+                    <span class="nav-icon">💬</span> Chat
+                </a>
+                <a href="/log" class="nav-item" id="nav-log">
+                    <span class="nav-icon">📊</span> Activity Log
+                </a>
+                <a href="/settings" class="nav-item active" id="nav-settings">
+                    <span class="nav-icon">⚙️</span> Settings
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <span class="user-name">{{ user.display_name }}</span>
+            </div>
+        </aside>
+
+        <main class="page-main">
+            <header class="mobile-header">
+                <button class="menu-btn" id="menu-btn">☰</button>
+                <h1>Settings</h1>
+                <button class="theme-toggle-sm" id="theme-toggle-sm">🌙</button>
+            </header>
+
+            <div class="page-content">
+                <h1>⚙️ Settings</h1>
+
+                {% if success %}
+                <div class="alert alert-success">✅ {{ success }}</div>
+                {% endif %}
+                {% if error %}
+                <div class="alert alert-error">⚠️ {{ error }}</div>
+                {% endif %}
+
+                <!-- API Key -->
+                <div class="settings-card">
+                    <h3>🔑 AI Provider</h3>
+                    <p class="settings-desc">Update your Groq API key. We'll verify it before saving.</p>
+                    <form method="POST" action="{{ url_for('settings') }}">
+                        <input type="hidden" name="action" value="update_key">
+                        <input type="password" name="api_key" placeholder="New API key (gsk_...)" class="settings-input">
+                        <button type="submit" class="btn btn-primary btn-sm">Update Key</button>
+                    </form>
+                </div>
+
+                <!-- Google Auth -->
+                <div class="settings-card">
+                    <h3>🔗 Google Account</h3>
+                    <p class="settings-desc">
+                        {% if user.google_token %}
+                            Google account is connected.
+                        {% else %}
+                            Not connected. Connect to use Gmail, Calendar, Drive, and Docs.
+                        {% endif %}
+                    </p>
+                    <button class="btn btn-google btn-sm" onclick="window.open('/oauth2callback', '_blank')">
+                        {% if user.google_token %}Re-authenticate{% else %}Connect Google{% endif %}
+                    </button>
+                </div>
+
+                <!-- Clear History -->
+                <div class="settings-card">
+                    <h3>🗑️ Conversation History</h3>
+                    <p class="settings-desc">Clear all your chat history. This cannot be undone.</p>
+                    <form method="POST" action="{{ url_for('settings') }}" onsubmit="return confirm('Clear all chat history? This cannot be undone.')">
+                        <input type="hidden" name="action" value="clear_history">
+                        <button type="submit" class="btn btn-danger btn-sm">Clear History</button>
+                    </form>
+                </div>
+
+                <!-- Reset Everything -->
+                <div class="settings-card settings-card-danger">
+                    <h3>🔄 Reset Everything</h3>
+                    <p class="settings-desc">Delete your account and all data. Start the setup wizard again.</p>
+                    <form method="POST" action="{{ url_for('settings') }}" onsubmit="return confirm('DELETE your account and ALL data? This is permanent!')">
+                        <input type="hidden" name="action" value="reset">
+                        <button type="submit" class="btn btn-danger btn-sm">Reset Everything</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

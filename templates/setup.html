@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dadarzz Agent — Setup</title>
+    <meta name="description" content="Set up your Dadarzz Agent AI assistant.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="setup-page">
+    <div class="setup-container">
+        <div class="setup-brand">
+            <div class="setup-logo"><img src="/static/logo.svg" alt="Dadarzz Agent" class="setup-logo-img"></div>
+            <h1>Dadarzz Agent</h1>
+            <p class="setup-subtitle">Your AI-powered school assistant</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('setup') }}" id="setup-form">
+            <!-- Step 1: Welcome -->
+            <div class="step active" id="step1">
+                <div class="step-header">
+                    <span class="step-badge">1</span>
+                    <h2>Welcome! What's your name?</h2>
+                </div>
+                <p class="step-desc">We'll use this to personalize your experience.</p>
+                <input type="text" name="display_name" id="display_name" placeholder="e.g. Alex" required autocomplete="off">
+                <div class="step-actions">
+                    <button type="button" class="btn btn-primary" onclick="goStep(2)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: API Key -->
+            <div class="step" id="step2">
+                <div class="step-header">
+                    <span class="step-badge">2</span>
+                    <h2>Enter your Groq API Key</h2>
+                </div>
+                <p class="step-desc">
+                    Get a free key from 
+                    <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com</a>.
+                    We'll test it before saving.
+                </p>
+                <input type="password" name="api_key" id="api_key" placeholder="gsk_..." required>
+                <div class="step-actions">
+                    <button type="button" class="btn btn-outline" onclick="goStep(1)">← Back</button>
+                    <button type="button" class="btn btn-secondary" id="test-key-btn" onclick="testApiKey()">Test Key</button>
+                    <button type="button" class="btn btn-primary" id="step2-next" onclick="goStep(3)" disabled>Continue →</button>
+                </div>
+                <div id="key-result" class="key-result"></div>
+            </div>
+
+            <!-- Step 3: Google Auth -->
+            <div class="step" id="step3">
+                <div class="step-header">
+                    <span class="step-badge">3</span>
+                    <h2>Connect Google Services</h2>
+                </div>
+                <p class="step-desc">
+                    Optional: Connect Gmail, Calendar, Docs, and Drive for full functionality.
+                    You can skip this and connect later in Settings.
+                </p>
+                <div class="step-actions">
+                    <button type="button" class="btn btn-outline" onclick="goStep(2)">← Back</button>
+                    <button type="button" class="btn btn-google" onclick="window.open('/oauth2callback', '_blank')">
+                        🔗 Connect Google Account
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="goStep(4)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: All Set -->
+            <div class="step" id="step4">
+                <div class="step-header">
+                    <span class="step-badge">✓</span>
+                    <h2>You're all set!</h2>
+                </div>
+                <p class="step-desc">Click below to start using Dadarzz Agent. You can change settings anytime.</p>
+                <div class="step-actions">
+                    <button type="button" class="btn btn-outline" onclick="goStep(3)">← Back</button>
+                    <button type="submit" class="btn btn-primary btn-lg">🚀 Launch Dadarzz Agent</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Progress dots -->
+        <div class="step-dots">
+            <span class="dot active" data-step="1"></span>
+            <span class="dot" data-step="2"></span>
+            <span class="dot" data-step="3"></span>
+            <span class="dot" data-step="4"></span>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        function goStep(n) {
+            // Validate step 1
+            if (n > 1 && !document.getElementById('display_name').value.trim()) {
+                document.getElementById('display_name').focus();
+                return;
+            }
+            // Validate step 2 — key must be tested
+            if (n > 2 && document.getElementById('step2-next').disabled) {
+                document.getElementById('api_key').focus();
+                return;
+            }
+
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+            
+            document.querySelectorAll('.dot').forEach(d => {
+                d.classList.toggle('active', parseInt(d.dataset.step) <= n);
+            });
+            currentStep = n;
+        }
+
+        async function testApiKey() {
+            const btn = document.getElementById('test-key-btn');
+            const result = document.getElementById('key-result');
+            const key = document.getElementById('api_key').value.trim();
+
+            if (!key) {
+                result.innerHTML = '<span class="text-error">Please enter an API key first.</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            result.innerHTML = '<span class="text-muted">Connecting to Groq...</span>';
+
+            try {
+                const resp = await fetch('/api/test-key', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({api_key: key})
+                });
+                const data = await resp.json();
+
+                if (data.ok) {
+                    result.innerHTML = '<span class="text-success">✅ API key is valid!</span>';
+                    document.getElementById('step2-next').disabled = false;
+                } else {
+                    result.innerHTML = '<span class="text-error">❌ ' + (data.error || 'Invalid key') + '</span>';
+                    document.getElementById('step2-next').disabled = true;
+                }
+            } catch (e) {
+                result.innerHTML = '<span class="text-error">❌ Connection error</span>';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Test Key';
+            }
+        }
+    </script>
+</body>
+</html>
