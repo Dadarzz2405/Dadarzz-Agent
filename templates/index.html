@@ -19,18 +19,18 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/chat" class="nav-item active" id="nav-chat">
-                    <span class="nav-icon">💬</span> Chat
+                    <span class="nav-icon icon icon-chat"></span> Chat
                 </a>
                 <a href="/log" class="nav-item" id="nav-log">
-                    <span class="nav-icon">📊</span> Activity Log
+                    <span class="nav-icon icon icon-chart"></span> Activity Log
                 </a>
                 <a href="/settings" class="nav-item" id="nav-settings">
-                    <span class="nav-icon">⚙️</span> Settings
+                    <span class="nav-icon icon icon-settings"></span> Settings
                 </a>
             </nav>
             <div class="sidebar-footer">
                 <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon" class="icon icon-moon"></span>
                 </button>
                 <span class="user-name">{{ user.display_name }}</span>
             </div>
@@ -40,20 +40,20 @@
         <main class="chat-main">
             <!-- Mobile Header -->
             <header class="mobile-header">
-                <button class="menu-btn" id="menu-btn">☰</button>
+                <button class="menu-btn" id="menu-btn"><span class="icon icon-menu"></span></button>
                 <h1>Dadarzz Agent</h1>
-                <button class="theme-toggle-sm" id="theme-toggle-sm">🌙</button>
+                <button class="theme-toggle-sm" id="theme-toggle-sm"><span class="icon icon-moon"></span></button>
             </header>
 
             <!-- Shortcut Chips -->
             <div class="shortcut-bar" id="shortcut-bar">
-                <button class="chip" data-shortcut="/email">📧 Email</button>
-                <button class="chip" data-shortcut="/cal">📅 Calendar</button>
-                <button class="chip" data-shortcut="/drive">💾 Drive</button>
-                <button class="chip" data-shortcut="/docs">📄 Docs</button>
-                <button class="chip" data-shortcut="/files">🗂️ Files</button>
-                <button class="chip" data-shortcut="/remind">⏰ Remind</button>
-                <button class="chip" data-shortcut="/ask">❓ Ask</button>
+                <button class="chip" data-shortcut="/email"><span class="icon icon-email"></span> Email</button>
+                <button class="chip" data-shortcut="/cal"><span class="icon icon-calendar"></span> Calendar</button>
+                <button class="chip" data-shortcut="/drive"><span class="icon icon-drive"></span> Drive</button>
+                <button class="chip" data-shortcut="/docs"><span class="icon icon-doc"></span> Docs</button>
+                <button class="chip" data-shortcut="/files"><span class="icon icon-folder"></span> Files</button>
+                <button class="chip" data-shortcut="/remind"><span class="icon icon-clock"></span> Remind</button>
+                <button class="chip" data-shortcut="/ask"><span class="icon icon-help"></span> Ask</button>
             </div>
 
             <!-- Messages Area -->
@@ -61,7 +61,7 @@
                 <div class="message assistant">
                     <div class="message-avatar"><img src="/static/logo.svg" alt="DA" class="avatar-logo"></div>
                     <div class="message-content">
-                        <p>Hey {{ user.display_name }}! I'm your Dadarzz Agent. I can help with email, calendar, Drive, Docs, local files, and answer questions about your documents. Try a shortcut above or just ask me anything! 🚀</p>
+                        <p>Hey {{ user.display_name }}! I'm your Dadarzz Agent. I can help with email, calendar, Drive, Docs, local files, and answer questions about your documents. Try a shortcut above or just ask me anything!</p>
                     </div>
                 </div>
             </div>
@@ -72,12 +72,12 @@
                     <div class="input-row">
                         <label class="file-upload-btn" title="Attach a file for /ask or /drive">
                             <input type="file" id="file-input" name="file" hidden>
-                            📎
+                            <span class="icon icon-paperclip"></span>
                         </label>
                         <input type="text" id="message-input" autocomplete="off"
                                placeholder="Ask me anything, or use a shortcut like /email..." required>
                         <button type="submit" id="send-button" class="send-btn">
-                            <span class="send-icon">↑</span>
+                            <span class="send-icon icon icon-send"></span>
                         </button>
                     </div>
                     <div class="file-preview" id="file-preview" style="display:none;">
@@ -93,7 +93,7 @@
     <div class="modal-overlay" id="email-modal" style="display:none;">
         <div class="modal">
             <div class="modal-header">
-                <h3>📧 Email Preview</h3>
+                <h3><span class="icon icon-email"></span> Email Preview</h3>
                 <button class="modal-close" id="email-modal-close">✕</button>
             </div>
             <div class="modal-body">

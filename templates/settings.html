@@ -17,18 +17,18 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/chat" class="nav-item" id="nav-chat">
-                    <span class="nav-icon">💬</span> Chat
+                    <span class="nav-icon icon icon-chat"></span> Chat
                 </a>
                 <a href="/log" class="nav-item" id="nav-log">
-                    <span class="nav-icon">📊</span> Activity Log
+                    <span class="nav-icon icon icon-chart"></span> Activity Log
                 </a>
                 <a href="/settings" class="nav-item active" id="nav-settings">
-                    <span class="nav-icon">⚙️</span> Settings
+                    <span class="nav-icon icon icon-settings"></span> Settings
                 </a>
             </nav>
             <div class="sidebar-footer">
                 <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon" class="icon icon-moon"></span>
                 </button>
                 <span class="user-name">{{ user.display_name }}</span>
             </div>
@@ -36,24 +36,24 @@
 
         <main class="page-main">
             <header class="mobile-header">
-                <button class="menu-btn" id="menu-btn">☰</button>
+                <button class="menu-btn" id="menu-btn"><span class="icon icon-menu"></span></button>
                 <h1>Settings</h1>
-                <button class="theme-toggle-sm" id="theme-toggle-sm">🌙</button>
+                <button class="theme-toggle-sm" id="theme-toggle-sm"><span class="icon icon-moon"></span></button>
             </header>
 
             <div class="page-content">
-                <h1>⚙️ Settings</h1>
+                <h1><span class="icon icon-settings"></span> Settings</h1>
 
                 {% if success %}
-                <div class="alert alert-success">✅ {{ success }}</div>
+                <div class="alert alert-success"><span class="icon icon-check"></span> {{ success }}</div>
                 {% endif %}
                 {% if error %}
-                <div class="alert alert-error">⚠️ {{ error }}</div>
+                <div class="alert alert-error"><span class="icon icon-warning"></span> {{ error }}</div>
                 {% endif %}
 
                 <!-- API Key -->
                 <div class="settings-card">
-                    <h3>🔑 AI Provider</h3>
+                    <h3><span class="icon icon-key"></span> AI Provider</h3>
                     <p class="settings-desc">Update your Groq API key. We'll verify it before saving.</p>
                     <form method="POST" action="{{ url_for('settings') }}">
                         <input type="hidden" name="action" value="update_key">
@@ -64,7 +64,7 @@
 
                 <!-- Google Auth -->
                 <div class="settings-card">
-                    <h3>🔗 Google Account</h3>
+                    <h3><span class="icon icon-link"></span> Google Account</h3>
                     <p class="settings-desc">
                         {% if user.google_token %}
                             Google account is connected.
@@ -79,7 +79,7 @@
 
                 <!-- Clear History -->
                 <div class="settings-card">
-                    <h3>🗑️ Conversation History</h3>
+                    <h3><span class="icon icon-trash"></span> Conversation History</h3>
                     <p class="settings-desc">Clear all your chat history. This cannot be undone.</p>
                     <form method="POST" action="{{ url_for('settings') }}" onsubmit="return confirm('Clear all chat history? This cannot be undone.')">
                         <input type="hidden" name="action" value="clear_history">
@@ -89,7 +89,7 @@
 
                 <!-- Reset Everything -->
                 <div class="settings-card settings-card-danger">
-                    <h3>🔄 Reset Everything</h3>
+                    <h3><span class="icon icon-refresh"></span> Reset Everything</h3>
                     <p class="settings-desc">Delete your account and all data. Start the setup wizard again.</p>
                     <form method="POST" action="{{ url_for('settings') }}" onsubmit="return confirm('DELETE your account and ALL data? This is permanent!')">
                         <input type="hidden" name="action" value="reset">

@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateThemeIcon() {
         const isLight = document.body.classList.contains("light");
-        const icon = isLight ? "☀️" : "🌙";
-        if (themeIcon) themeIcon.textContent = icon;
-        if (themeToggleSm) themeToggleSm.textContent = icon;
+        const iconClass = isLight ? "icon-sun" : "icon-moon";
+        if (themeIcon) themeIcon.className = `icon ${iconClass}`;
+        if (themeToggleSm) themeToggleSm.innerHTML = `<span class="icon ${iconClass}"></span>`;
     }
 
     if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 removeTyping(typingEl);
-                addMessage("❌ Error connecting to server. Please try again.", "assistant");
+                addMessage("Error connecting to server. Please try again.", "assistant");
                 console.error("Chat error:", error);
             } finally {
                 sendButton.disabled = false;
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fileInput.addEventListener("change", () => {
             if (fileInput.files.length > 0) {
                 if (filePreview) filePreview.style.display = "flex";
-                if (fileName) fileName.textContent = "📄 " + fileInput.files[0].name;
+                if (fileName) fileName.textContent = fileInput.files[0].name;
             }
         });
     }
@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await resp.json();
                 addMessage(data.response || "Email sent!", "assistant");
             } catch {
-                addMessage("❌ Failed to send email.", "assistant");
+                addMessage("Failed to send email.", "assistant");
             }
         });
     }
@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const avatar = document.createElement("div");
         avatar.className = "message-avatar";
         if (role === "user") {
-            avatar.textContent = "👤";
+            avatar.innerHTML = '<span class="icon icon-user"></span>';
         } else {
             avatar.innerHTML = '<img src="/static/logo.svg" alt="DA" class="avatar-logo">';
         }

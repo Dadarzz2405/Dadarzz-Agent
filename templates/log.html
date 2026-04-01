@@ -17,18 +17,18 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/chat" class="nav-item" id="nav-chat">
-                    <span class="nav-icon">💬</span> Chat
+                    <span class="nav-icon icon icon-chat"></span> Chat
                 </a>
                 <a href="/log" class="nav-item active" id="nav-log">
-                    <span class="nav-icon">📊</span> Activity Log
+                    <span class="nav-icon icon icon-chart"></span> Activity Log
                 </a>
                 <a href="/settings" class="nav-item" id="nav-settings">
-                    <span class="nav-icon">⚙️</span> Settings
+                    <span class="nav-icon icon icon-settings"></span> Settings
                 </a>
             </nav>
             <div class="sidebar-footer">
                 <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon" class="icon icon-moon"></span>
                 </button>
                 <span class="user-name">{{ user.display_name }}</span>
             </div>
@@ -36,25 +36,25 @@
 
         <main class="page-main">
             <header class="mobile-header">
-                <button class="menu-btn" id="menu-btn">☰</button>
+                <button class="menu-btn" id="menu-btn"><span class="icon icon-menu"></span></button>
                 <h1>Activity Log</h1>
-                <button class="theme-toggle-sm" id="theme-toggle-sm">🌙</button>
+                <button class="theme-toggle-sm" id="theme-toggle-sm"><span class="icon icon-moon"></span></button>
             </header>
 
             <div class="page-content">
                 <div class="page-header">
-                    <h1>📊 Activity Log</h1>
-                    <a href="/log/export" class="btn btn-outline btn-sm">📥 Export CSV</a>
+                    <h1><span class="icon icon-chart"></span> Activity Log</h1>
+                    <a href="/log/export" class="btn btn-outline btn-sm"><span class="icon icon-download"></span> Export CSV</a>
                 </div>
 
                 <!-- Filters -->
                 <div class="filter-bar">
                     <a href="/log" class="filter-chip {% if not current_filter %}active{% endif %}">All</a>
-                    <a href="/log?filter=sent_email" class="filter-chip {% if current_filter == 'sent_email' %}active{% endif %}">📧 Email</a>
-                    <a href="/log?filter=created_event" class="filter-chip {% if current_filter == 'created_event' %}active{% endif %}">📅 Calendar</a>
-                    <a href="/log?filter=uploaded_file" class="filter-chip {% if current_filter == 'uploaded_file' %}active{% endif %}">💾 Drive</a>
-                    <a href="/log?filter=created_file" class="filter-chip {% if current_filter == 'created_file' %}active{% endif %}">🗂️ Files</a>
-                    <a href="/log?filter=settings_update" class="filter-chip {% if current_filter == 'settings_update' %}active{% endif %}">⚙️ Settings</a>
+                    <a href="/log?filter=sent_email" class="filter-chip {% if current_filter == 'sent_email' %}active{% endif %}"><span class="icon icon-email"></span> Email</a>
+                    <a href="/log?filter=created_event" class="filter-chip {% if current_filter == 'created_event' %}active{% endif %}"><span class="icon icon-calendar"></span> Calendar</a>
+                    <a href="/log?filter=uploaded_file" class="filter-chip {% if current_filter == 'uploaded_file' %}active{% endif %}"><span class="icon icon-drive"></span> Drive</a>
+                    <a href="/log?filter=created_file" class="filter-chip {% if current_filter == 'created_file' %}active{% endif %}"><span class="icon icon-folder"></span> Files</a>
+                    <a href="/log?filter=settings_update" class="filter-chip {% if current_filter == 'settings_update' %}active{% endif %}"><span class="icon icon-settings"></span> Settings</a>
                 </div>
 
                 {% if logs %}
@@ -80,7 +80,7 @@
                 </div>
                 {% else %}
                 <div class="empty-state">
-                    <div class="empty-icon">📋</div>
+                    <div class="empty-icon"><span class="icon icon-clipboard icon-2xl"></span></div>
                     <p>No activity logged yet. Start chatting to see your activity here!</p>
                 </div>
                 {% endif %}

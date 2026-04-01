@@ -18,7 +18,7 @@
         </div>
 
         {% if error %}
-        <div class="alert alert-error">⚠️ {{ error }}</div>
+        <div class="alert alert-error"><span class="icon icon-warning"></span> {{ error }}</div>
         {% endif %}
 
         <form method="POST" action="{{ url_for('setup') }}" id="setup-form">
@@ -68,7 +68,7 @@
                 <div class="step-actions">
                     <button type="button" class="btn btn-outline" onclick="goStep(2)">← Back</button>
                     <button type="button" class="btn btn-google" onclick="window.open('/oauth2callback', '_blank')">
-                        🔗 Connect Google Account
+                        <span class="icon icon-link"></span> Connect Google Account
                     </button>
                     <button type="button" class="btn btn-primary" onclick="goStep(4)">Continue →</button>
                 </div>
@@ -83,7 +83,7 @@
                 <p class="step-desc">Click below to start using Dadarzz Agent. You can change settings anytime.</p>
                 <div class="step-actions">
                     <button type="button" class="btn btn-outline" onclick="goStep(3)">← Back</button>
-                    <button type="submit" class="btn btn-primary btn-lg">🚀 Launch Dadarzz Agent</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><span class="icon icon-rocket"></span> Launch Dadarzz Agent</button>
                 </div>
             </div>
         </form>
@@ -144,14 +144,14 @@
                 const data = await resp.json();
 
                 if (data.ok) {
-                    result.innerHTML = '<span class="text-success">✅ API key is valid!</span>';
+                    result.innerHTML = '<span class="text-success"><span class="icon icon-check"></span> API key is valid!</span>';
                     document.getElementById('step2-next').disabled = false;
                 } else {
-                    result.innerHTML = '<span class="text-error">❌ ' + (data.error || 'Invalid key') + '</span>';
+                    result.innerHTML = '<span class="text-error"><span class="icon icon-x-circle"></span> ' + (data.error || 'Invalid key') + '</span>';
                     document.getElementById('step2-next').disabled = true;
                 }
             } catch (e) {
-                result.innerHTML = '<span class="text-error">❌ Connection error</span>';
+                result.innerHTML = '<span class="text-error"><span class="icon icon-x-circle"></span> Connection error</span>';
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Test Key';
