@@ -1,0 +1,273 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag name (e.g. v1.0.0)'
+        required: true
+        default: 'v0.0.0-test'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS ARM64 (M1/M2)
+          - os: macos-latest
+            platform: macos-arm64
+            artifact_name: DadarzzAgent-macOS-arm64
+            launch_script: launch.command
+            install_script: install.command
+
+          # macOS x64 (Intel)
+          - os: macos-13
+            platform: macos-x64
+            artifact_name: DadarzzAgent-macOS-x64
+            launch_script: launch.command
+            install_script: install.command
+
+          # Windows x64
+          - os: windows-latest
+            platform: windows-x64
+            artifact_name: DadarzzAgent-Windows-x64
+            launch_script: launch.bat
+            install_script: install.bat
+
+          # Linux x64
+          - os: ubuntu-latest
+            platform: linux-x64
+            artifact_name: DadarzzAgent-Linux-x64
+            launch_script: launch.sh
+            install_script: install.sh
+
+          # Linux ARM64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
+            artifact_name: DadarzzAgent-Linux-arm64
+            launch_script: launch.sh
+            install_script: install.sh
+
+    runs-on: ${{ matrix.os }}
+    name: Build (${{ matrix.platform }})
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          pyinstaller --noconfirm --onedir \
+            --name "DadarzzAgent" \
+            --add-data "templates:templates" \
+            --add-data "static:static" \
+            --add-data "config:config" \
+            --hidden-import "groq" \
+            --hidden-import "flask" \
+            --hidden-import "dotenv" \
+            --hidden-import "pypdf" \
+            --hidden-import "jinja2.ext" \
+            --hidden-import "markupsafe" \
+            main.py
+        shell: bash
+
+      # Windows uses semicolons for --add-data separator
+      - name: Build with PyInstaller (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller --noconfirm --onedir `
+            --name "DadarzzAgent" `
+            --add-data "templates;templates" `
+            --add-data "static;static" `
+            --add-data "config;config" `
+            --hidden-import "groq" `
+            --hidden-import "flask" `
+            --hidden-import "dotenv" `
+            --hidden-import "pypdf" `
+            --hidden-import "jinja2.ext" `
+            --hidden-import "markupsafe" `
+            main.py
+        shell: pwsh
+
+      - name: Create platform launcher (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          cat > dist/DadarzzAgent/launch.command << 'EOF'
+          #!/bin/bash
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          cd "$DIR"
+          echo ""
+          echo "╔══════════════════════════════════════╗"
+          echo "║  🧠 Dadarzz Agent is running...     ║"
+          echo "║  Close this window to stop.         ║"
+          echo "╚══════════════════════════════════════╝"
+          echo ""
+          ./DadarzzAgent
+          EOF
+          chmod +x dist/DadarzzAgent/launch.command
+
+      - name: Create platform launcher (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cat > dist/DadarzzAgent/launch.sh << 'EOF'
+          #!/bin/bash
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          cd "$DIR"
+          echo ""
+          echo "╔══════════════════════════════════════╗"
+          echo "║  🧠 Dadarzz Agent is running...     ║"
+          echo "║  Close this window to stop.         ║"
+          echo "╚══════════════════════════════════════╝"
+          echo ""
+          ./DadarzzAgent
+          EOF
+          chmod +x dist/DadarzzAgent/launch.sh
+
+      - name: Create platform launcher (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          @"
+          @echo off
+          title Dadarzz Agent
+          cd /d "%~dp0"
+          echo.
+          echo ╔══════════════════════════════════════╗
+          echo ║  🧠 Dadarzz Agent is running...     ║
+          echo ║  Close this window to stop.         ║
+          echo ╚══════════════════════════════════════╝
+          echo.
+          DadarzzAgent.exe
+          pause
+          "@ | Out-File -FilePath "dist/DadarzzAgent/launch.bat" -Encoding ascii
+        shell: pwsh
+
+      - name: Add README (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cat > dist/DadarzzAgent/README.txt << 'READMEEOF'
+          ╔══════════════════════════════════════════╗
+          ║     Dadarzz Agent — Quick Start         ║
+          ╠══════════════════════════════════════════╣
+          ║                                          ║
+          ║  macOS:   double-click launch.command    ║
+          ║  Windows: double-click launch.bat        ║
+          ║  Linux:   run ./launch.sh                ║
+          ║                                          ║
+          ║  If blocked on macOS:                    ║
+          ║    right-click → Open → Open             ║
+          ║    or: xattr -cr DadarzzAgent/           ║
+          ║                                          ║
+          ║  Need a Groq API key?                    ║
+          ║  → https://console.groq.com/keys (free) ║
+          ╚══════════════════════════════════════════╝
+          READMEEOF
+        shell: bash
+
+      - name: Add README (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          @"
+          ================================================
+               Dadarzz Agent - Quick Start
+          ================================================
+
+            macOS:   double-click launch.command
+            Windows: double-click launch.bat
+            Linux:   run ./launch.sh
+
+            If blocked on macOS:
+              right-click -> Open -> Open
+              or: xattr -cr DadarzzAgent/
+
+            Need a Groq API key?
+            -> https://console.groq.com/keys (free)
+          ================================================
+          "@ | Out-File -FilePath "dist/DadarzzAgent/README.txt" -Encoding utf8
+        shell: pwsh
+
+      - name: Package (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd dist
+          zip -r "${{ matrix.artifact_name }}.zip" DadarzzAgent/
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path "dist/DadarzzAgent" -DestinationPath "dist/${{ matrix.artifact_name }}.zip"
+        shell: pwsh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist/${{ matrix.artifact_name }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Determine tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "Dadarzz Agent ${{ steps.tag.outputs.tag }}"
+          body: |
+            ## Downloads
+
+            | Platform | Architecture | File |
+            |----------|-------------|------|
+            | 🍎 macOS | Apple Silicon (M1/M2) | `DadarzzAgent-macOS-arm64.zip` |
+            | 🍎 macOS | Intel | `DadarzzAgent-macOS-x64.zip` |
+            | 🪟 Windows | x64 | `DadarzzAgent-Windows-x64.zip` |
+            | 🐧 Linux | x64 | `DadarzzAgent-Linux-x64.zip` |
+            | 🐧 Linux | ARM64 | `DadarzzAgent-Linux-arm64.zip` |
+
+            ## Quick Start
+            1. Download the ZIP for your platform
+            2. Unzip the file
+            3. Run the launcher:
+               - **macOS**: double-click `launch.command` (right-click → Open if blocked)
+               - **Windows**: double-click `launch.bat`
+               - **Linux**: run `./launch.sh`
+            4. Get a free API key at https://console.groq.com/keys
+
+          files: |
+            artifacts/**/*.zip
+          draft: false
+          prerelease: false

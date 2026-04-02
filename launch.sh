@@ -16,4 +16,3 @@ echo ""
 
 # Start the app (browser auto-opens from main.py)
 python main.py
-

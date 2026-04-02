@@ -68,10 +68,7 @@ echo "Opening in your browser..."
 echo "To stop: close this window or press Ctrl+C"
 echo ""
 
-# Open browser after short delay
-(sleep 2 && open "http://127.0.0.1:5000") &
-
-# Start the app
+# Start the app (browser auto-opens from main.py)
 python main.py
 LAUNCHER
 chmod +x "$LAUNCH_SCRIPT"
@@ -115,7 +112,6 @@ cat > "$APP_BUNDLE/Contents/MacOS/launch" << APPSCRIPT
 #!/bin/bash
 cd "$SCRIPT_DIR"
 source .venv/bin/activate
-(sleep 2 && open "http://127.0.0.1:5000") &
 python main.py
 APPSCRIPT
 chmod +x "$APP_BUNDLE/Contents/MacOS/launch"

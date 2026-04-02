@@ -262,6 +262,17 @@ def notify_check():
 
 
 if __name__ == "__main__":
+    import webbrowser
+    import threading
+    import time as _time
+
+    def _open_browser():
+        _time.sleep(2)
+        webbrowser.open("http://127.0.0.1:5000")
+
+    # Auto-open browser (cross-platform: works on macOS, Windows, Linux)
+    threading.Thread(target=_open_browser, daemon=True).start()
+
     # Start notification background thread
     from notifications.notifier import start_notifier
     start_notifier(app)

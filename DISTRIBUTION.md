@@ -1,80 +1,120 @@
 # 🧠 Dadarzz Agent — Distribution Guide
 
-How to build and share this app with friends on **school Macs (M1/M2)** — no admin access or Python needed on their end.
+How to build and share this app across **macOS, Windows, and Linux**.
 
 ---
 
-## Step 1: Build on Your Mac
+## Option A: Automated Builds via GitHub Releases ⭐
+
+The easiest way — GitHub Actions builds for all platforms automatically.
+
+### Create a Release
+
+```bash
+git tag v1.0.0
+git push --tags
+```
+
+This triggers a CI pipeline that builds for **5 targets**:
+| Platform | Architecture | Artifact |
+|----------|-------------|----------|
+| 🍎 macOS | Apple Silicon (M1/M2) | `DadarzzAgent-macOS-arm64.zip` |
+| 🍎 macOS | Intel | `DadarzzAgent-macOS-x64.zip` |
+| 🪟 Windows | x64 | `DadarzzAgent-Windows-x64.zip` |
+| 🐧 Linux | x64 | `DadarzzAgent-Linux-x64.zip` |
+| 🐧 Linux | ARM64 | `DadarzzAgent-Linux-arm64.zip` |
+
+Download links appear on your GitHub **Releases** page.
+
+### Manual Trigger
+
+You can also trigger a build without a tag from the GitHub Actions tab → **Build & Release** → **Run workflow**.
+
+---
+
+## Option B: Build Locally (macOS only)
 
 ```bash
 bash build-mac.sh
 ```
 
-This creates:
-- `dist/DadarzzAgent/` — the app folder with everything bundled
-- `dist/DadarzzAgent-macOS.zip` — ready-to-share zip file
-
-> Test it yourself first: `./dist/DadarzzAgent/launch.command`
+Creates `dist/DadarzzAgent-macOS.zip` — share via AirDrop/Drive/USB.
 
 ---
 
-## Step 2: Share the ZIP
+## How to Share
 
-Send `dist/DadarzzAgent-macOS.zip` to your friends using:
-- **AirDrop** (fastest)
-- Google Drive / iCloud link
-- USB flash drive
+- **AirDrop** (macOS to macOS, fastest)
+- **Google Drive / iCloud** link
+- **USB flash drive**
+- **GitHub Releases** link (best for cross-platform)
 
 ---
 
-## Step 3: What Your Friends Do
+## What Your Friends Do
 
-### First Time Setup
-1. **Unzip** the file (double-click the .zip)
-2. **Right-click** `launch.command` → **Open** → **Open**
-   - This is needed only the first time (macOS security)
-3. The app opens in their browser — done!
-4. The **setup wizard** will guide them through entering their API key
+### 🍎 macOS
+1. Unzip the file
+2. Right-click `launch.command` → **Open** → **Open** (first time only)
+3. Browser opens automatically — done!
 
-### If macOS Says "Cannot Be Opened"
-Open **Terminal** (Spotlight → type "Terminal") and paste:
-```
-xattr -cr ~/Downloads/DadarzzAgent
-```
-Then try step 2 again.
+**If blocked:** `xattr -cr ~/Downloads/DadarzzAgent` in Terminal
 
-### Every Time After
-Just double-click `launch.command` to start.
+### 🪟 Windows
+1. Unzip the file
+2. Double-click `launch.bat`
+3. If SmartScreen blocks it: click **More info** → **Run anyway**
+4. Browser opens automatically — done!
+
+### 🐧 Linux
+1. Unzip the file
+2. Open terminal in the folder
+3. Run: `chmod +x launch.sh && ./launch.sh`
+4. Browser opens automatically — done!
+
+---
+
+## Source Install (without PyInstaller)
+
+For users who have Python 3 installed and want to run from source:
+
+| Platform | Command |
+|----------|---------|
+| 🍎 macOS | Double-click `install.command` |
+| 🪟 Windows | Double-click `install.bat` |
+| 🐧 Linux | `chmod +x install.sh && ./install.sh` |
 
 ---
 
 ## Quick Reference Card
 
-Print or send this to your friends:
-
 ```
-┌─────────────────────────────────────┐
-│       Dadarzz Agent — Quick Start   │
-│                                     │
-│  1. Unzip the file                  │
-│  2. Open the folder                 │
-│  3. Double-click "launch.command"   │
-│  4. If blocked: right-click → Open  │
-│  5. Browser opens automatically     │
-│  6. To stop: close the Terminal     │
-│                                     │
-│  Need a Groq API key?              │
-│  → console.groq.com/keys (free)    │
-└─────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│       Dadarzz Agent — Quick Start       │
+│                                         │
+│  macOS:   double-click launch.command   │
+│  Windows: double-click launch.bat       │
+│  Linux:   ./launch.sh                   │
+│                                         │
+│  If blocked:                            │
+│  macOS:   right-click → Open            │
+│  Windows: More info → Run anyway        │
+│  Linux:   chmod +x launch.sh            │
+│                                         │
+│  Need a Groq API key?                   │
+│  → console.groq.com/keys (free)         │
+└─────────────────────────────────────────┘
 ```
 
 ---
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---|---|
-| "App is damaged" | Run `xattr -cr ~/Downloads/DadarzzAgent` in Terminal |
-| "Permission denied" | Run `chmod +x launch.command` in Terminal |
-| Nothing happens | Open Terminal, drag `launch.command` into it, press Enter |
-| Port 5000 in use | Close any other Dadarzz Agent windows first |
+| Problem | Platform | Fix |
+|---------|----------|-----|
+| "App is damaged" | macOS | `xattr -cr ~/Downloads/DadarzzAgent` |
+| "Permission denied" | macOS/Linux | `chmod +x launch.command` or `chmod +x launch.sh` |
+| SmartScreen blocks | Windows | Click **More info** → **Run anyway** |
+| "python not found" | Windows | Reinstall Python, check **Add to PATH** |
+| Nothing happens | All | Open terminal, run the launcher from there |
+| Port 5000 in use | All | Close other Dadarzz Agent instances |

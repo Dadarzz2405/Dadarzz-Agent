@@ -56,7 +56,6 @@ echo "║  🧠 Dadarzz Agent is running...     ║"
 echo "║  Close this window to stop.         ║"
 echo "╚══════════════════════════════════════╝"
 echo ""
-(sleep 2 && open "http://127.0.0.1:5000") &
 ./DadarzzAgent
 EOF
 chmod +x "$DIST_DIR/$APP_NAME/launch.command"
