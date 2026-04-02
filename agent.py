@@ -62,7 +62,7 @@ TOOLS_SPEC = [
     },
     {
         "name": "files",
-        "description": "Manage local files. Actions: create_file, read_file, move_file, delete_file, list_dir, create_dir",
+        "description": "Manage local files. Use ~ for home directory (e.g., ~/Desktop) and . for current directory. Actions: create_file, read_file, move_file, delete_file, list_dir, create_dir",
         "actions": {
             "create_file": {"params": ["path", "content"], "desc": "Create a new local file"},
             "read_file": {"params": ["path"], "desc": "Read content of a local file"},

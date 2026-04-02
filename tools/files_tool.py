@@ -19,7 +19,12 @@ def _safe_path(path_str):
     """Resolve a path and verify it's within the home directory.
     Returns (Path, error_str). If error_str is not None, the path is unsafe."""
     try:
-        p = Path(path_str).expanduser().resolve()
+        path_str_clean = str(path_str).strip()
+        # Fallback for common AI path generation mistakes
+        if path_str_clean in ["/Desktop", "/Documents", "/Downloads", "/desktop"]:
+            path_str_clean = "~" + path_str_clean
+            
+        p = Path(path_str_clean).expanduser().resolve()
         # Block path traversal
         if ".." in str(path_str):
             return None, "Path traversal (..) is not allowed."
