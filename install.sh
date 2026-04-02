@@ -65,7 +65,7 @@ mkdir -p "$APPLICATIONS"
 cat > "$APPLICATIONS/dadarzz-agent.desktop" << EOF
 [Desktop Entry]
 Name=Dadarzz Agent
-Comment=AI Study Assistant
+Comment=AI-Agent
 Exec=bash "$LAUNCH_SCRIPT"
 Terminal=true
 Type=Application
