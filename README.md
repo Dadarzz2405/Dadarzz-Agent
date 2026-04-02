@@ -55,10 +55,29 @@ chmod +x install.sh
 
 ## ❓ Troubleshooting
 
+### 🍎 Detailed macOS Troubleshooting
+Apple's security sometimes blocks downloaded apps. If `launch.command` doesn't work, open the **Terminal** app and run these commands based on your issue:
+
+**1. "App is damaged and can't be opened"**
+This is macOS Gatekeeper blocking the app. Run this exact command (assuming you unzipped it in Downloads):
+```bash
+xattr -cr ~/Downloads/DadarzzAgent
+```
+
+**2. "Permission denied" or the launcher opens as a text file**
+You need to make the launcher executable:
+```bash
+chmod +x ~/Downloads/DadarzzAgent/launch.command
+```
+
+**3. "Unidentified Developer" warning**
+Instead of double-clicking, simply **Right-Click** on `launch.command` → select **Open** → then click **Open** anyway.
+
+---
+
+### Other Issues
 | Problem | Platform | Fix |
 |---------|----------|-----|
-| "App is damaged" | macOS | Open Terminal and run: `xattr -cr ~/Downloads/DadarzzAgent` |
-| "Permission denied" | macOS/Linux | `chmod +x launch.command` or `chmod +x launch.sh` |
 | Nothing happens | All | Try launching from a Terminal/Command Prompt to see the error message |
 | Port 5000 in use | All | Close any other running instances of Dadarzz Agent |
 | "python not found" | Windows | Make sure to check **Add Python to PATH** when installing Python |
