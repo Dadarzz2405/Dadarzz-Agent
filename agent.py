@@ -129,15 +129,14 @@ def parse_tool_call(response_text):
     Returns parsed dict if tool call, None otherwise."""
     text = response_text.strip()
 
-    # Try to find JSON in code blocks first
-    code_block = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-    if code_block:
-        text = code_block.group(1)
-
-    # Try direct JSON parse
-    if text.startswith("{"):
+    # Try to find the first { and last }
+    start_idx = text.find("{")
+    end_idx = text.rfind("}")
+    
+    if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+        json_str = text[start_idx:end_idx+1]
         try:
-            data = json.loads(text)
+            data = json.loads(json_str)
             if "tool" in data and "action" in data:
                 return data
         except json.JSONDecodeError:
