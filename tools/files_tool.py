@@ -94,28 +94,52 @@ def read_file(params, user_id):
 
 
 def move_file(params, user_id):
-    """Move or rename a file."""
+    """Move or rename a file or files (supports wildcards like *.jpeg)."""
+    import glob
     src_str = params.get("src", "")
     dest_str = params.get("dest", "")
-
-    src, err = _safe_path(src_str)
-    if err:
-        return json.dumps({"error": f"Source: {err}"})
 
     dest, err = _safe_path(dest_str)
     if err:
         return json.dumps({"error": f"Destination: {err}"})
-
-    if not src.exists():
-        return json.dumps({"error": f"Source not found: {src_str}"})
-
-    try:
+        
+    src_expanded = str(Path(src_str).expanduser())
+    if "*" in src_expanded or "?" in src_expanded:
+        matched_files = glob.glob(src_expanded)
+        if not matched_files:
+            return json.dumps({"error": f"No files matched wildcard: {src_str}"})
+            
+        moved_count = 0
         dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(src), str(dest))
-        append_activity(user_id, "moved_file", f"{src} → {dest}")
-        return json.dumps({"status": "moved", "from": str(src), "to": str(dest)})
-    except Exception as e:
-        return json.dumps({"error": f"Failed to move file: {str(e)}"})
+        dest_is_dir = dest.is_dir() if dest.exists() else True # if bulk moving, assume dest is dir
+        if not dest.exists():
+            dest.mkdir(parents=True, exist_ok=True)
+            
+        for file_path in matched_files:
+            safe_src, src_err = _safe_path(file_path)
+            if src_err or not safe_src.exists():
+                continue
+            shutil.move(str(safe_src), str(dest / safe_src.name) if dest_is_dir else str(dest))
+            moved_count += 1
+            
+        append_activity(user_id, "moved_file_bulk", f"{src_str} → {dest_str} ({moved_count} files)")
+        return json.dumps({"status": "moved", "files_moved": moved_count, "to": str(dest)})
+
+    else:
+        src, err = _safe_path(src_str)
+        if err:
+            return json.dumps({"error": f"Source: {err}"})
+
+        if not src.exists():
+            return json.dumps({"error": f"Source not found: {src_str}"})
+
+        try:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), str(dest))
+            append_activity(user_id, "moved_file", f"{src} → {dest}")
+            return json.dumps({"status": "moved", "from": str(src), "to": str(dest)})
+        except Exception as e:
+            return json.dumps({"error": f"Failed to move file: {str(e)}"})
 
 
 def delete_file(params, user_id):
